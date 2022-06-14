@@ -8,6 +8,11 @@ export async function signUp(req, res) {
       return res.status(409).send("E-mail already in use!");
     }
 
+    const usernameResult = await userRepository.getUSerByUsername(username);
+    if (usernameResult.rowCount !== 0) {
+      return res.status(409).send("Username already in use!");
+    }
+
     await userRepository.signUpUser(email, password, username, picture);
     res.sendStatus(201);
   } catch (error) {
