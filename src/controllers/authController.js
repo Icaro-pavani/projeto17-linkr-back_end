@@ -15,7 +15,7 @@ export async function signUp(req, res) {
       return res.status(409).send("E-mail already in use!");
     }
 
-    const usernameResult = await userRepository.getUSerByUsername(username);
+    const usernameResult = await userRepository.getUserByUsername(username);
     if (usernameResult.rowCount !== 0) {
       return res.status(409).send("Username already in use!");
     }
