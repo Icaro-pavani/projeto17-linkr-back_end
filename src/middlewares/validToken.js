@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
-import { userLinkRepository } from "../repositories/repository.js";
+import userRepository from "../repositories/userRepository.js";
 import tokenSchema from "../schemas/tokenSchema.js";
 
 dotenv.config();
@@ -16,8 +16,8 @@ export default async function validToken(req, res, next) {
 
     const user = jwt.verify(tokenValidation, secretKey);
 
-    const userResult = await userLinkRepository.getUserWithVisitCount(user.id); //tem que alterar para a função do repositório desse projeto
-
+    const userResult = await userRepository.getUSerByUsername(user.username);
+    
     if (userResult.rows.length === 0) {
       return res.sendStatus(404);
     }
