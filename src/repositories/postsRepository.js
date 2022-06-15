@@ -7,7 +7,7 @@ async function getAllPosts(){
 
 async function insertPost(idUser, link, description) {
     return db.query(
-      `INSERT INTO posts (idUser, link, description) VALUES ($1, $2, $3)`,
+      `INSERT INTO posts ("idUser", link, description) VALUES ($1, $2, $3)`,
       [idUser, link, description]
     );
 };
