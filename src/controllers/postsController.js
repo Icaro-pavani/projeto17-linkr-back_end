@@ -28,3 +28,17 @@ export async function getPosts(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function publishPost(req, res) {
+    try {
+      const user = res.locals.user;
+      const { link, description } = res.locals.body;
+      
+      await postsRepository.insertPost(user.id, link, description);
+      return res.sendStatus(201);
+
+    } catch (error) {
+      console.log(error);
+      return res.sendStatus(500);
+    };
+};

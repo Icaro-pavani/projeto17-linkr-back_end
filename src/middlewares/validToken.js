@@ -26,6 +26,7 @@ export default async function validToken(req, res, next) {
     res.locals.user = userResult.rows[0];
   } catch (error) {
     console.log(error);
+    console.log(req.headers.authorization)
     return res.sendStatus(401);
   }
 
