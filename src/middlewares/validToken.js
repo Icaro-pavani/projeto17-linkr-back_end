@@ -16,7 +16,7 @@ export default async function validToken(req, res, next) {
 
     const user = jwt.verify(tokenValidation, secretKey);
 
-    const userResult = await userRepository.getUSerByUsername(user.username);
+    const userResult = await userRepository.getUserByUsername(user.username);
     
     if (userResult.rows.length === 0) {
       return res.sendStatus(404);
