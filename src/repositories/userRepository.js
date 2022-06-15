@@ -5,7 +5,7 @@ async function getUserByEmail(email) {
 }
 
 async function getUSerByUsername(username) {
-  return db.query(`SELECT * FROM users WHERE email = $1`, [username]);
+  return db.query(`SELECT * FROM users WHERE username = $1`, [username]);
 }
 
 async function signUpUser(email, password, username, picture) {
