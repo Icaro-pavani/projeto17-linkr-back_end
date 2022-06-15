@@ -7,10 +7,10 @@ export async function publishPost(req, res) {
 
         if (user.username === username) {
             await userRepository.insertPost(user.id, link, description);
-            res.sendStatus(201);
+            return res.sendStatus(201);
         };    
     } catch (error) {
         console.log(error);
-        res.sendStatus(500);
+        return res.sendStatus(500);
     };
 };
