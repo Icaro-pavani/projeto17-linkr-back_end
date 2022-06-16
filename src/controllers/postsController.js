@@ -38,7 +38,7 @@ export async function publishPost(req, res) {
       const metadata = await urlMetadata(link);
       const { title : titleLink , image : imageLink, description : linkDescription} = metadata;
 
-      await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
+      await postsRepository.insertPost(user.id, description, link, titleLink, imageLink, linkDescription);
 
       return res.sendStatus(201);
 
