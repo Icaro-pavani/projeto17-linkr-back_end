@@ -11,10 +11,10 @@ async function getAllPosts(){
     return db.query(query);    
 };
 
-async function insertPost(idUser, link, description) {
+async function insertPost(idUser, link, description, titleLink, imageLink, linkDescription) {
     return db.query(
-      `INSERT INTO posts ("idUser", link, description) VALUES ($1, $2, $3)`,
-      [idUser, link, description]
+      `INSERT INTO posts ("idUser", description, link, "titleLink", "imageLink", "descriptionLink") VALUES ($1, $2, $3, $4, $5, $6)`,
+      [idUser, description, link, titleLink, imageLink, linkDescription]
     );
 };
 

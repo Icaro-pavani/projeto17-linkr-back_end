@@ -9,8 +9,11 @@ CREATE TABLE "users" (
 CREATE TABLE "posts" (
     "id" SERIAL PRIMARY KEY,
     "idUser" INTEGER NOT NULL REFERENCES "users"("id"),
+    "description" VARCHAR(500),
     "link" TEXT NOT NULL,
-    "description" VARCHAR(500)
+    "titleLink" TEXT NOT NULL,
+    "imageLink" TEXT NOT NULL,
+    "descriptionLink" TEXT NOT NULL
 );
 
 CREATE TABLE "likesPosts" (

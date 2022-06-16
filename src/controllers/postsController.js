@@ -1,3 +1,4 @@
+import urlMetadata from "url-metadata";
 import postsRepository from "./../repositories/postsRepository.js";
 
 export async function getPosts(req, res) {
@@ -32,9 +33,13 @@ export async function getPosts(req, res) {
 export async function publishPost(req, res) {
     try {
       const user = res.locals.user;
-      const { link, description } = res.locals.body;
-      
-      await postsRepository.insertPost(user.id, link, description);
+      const { link, description } = req.body;
+
+      const metadata = await urlMetadata(link);
+      const { title : titleLink , image : imageLink, description : linkDescription} = metadata;
+
+      await postsRepository.insertPost(user.id, description, link, titleLink, imageLink, linkDescription);
+
       return res.sendStatus(201);
 
     } catch (error) {
