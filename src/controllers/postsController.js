@@ -36,9 +36,10 @@ export async function publishPost(req, res) {
       const { link, description } = req.body;
 
       const metadata = await urlMetadata(link);
+      console.log(metadata)
       const { title : titleLink , image : imageLink, description : linkDescription} = metadata;
 
-      await postsRepository.insertPost(user.id, description, link, titleLink, imageLink, linkDescription);
+      await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
 
       return res.sendStatus(201);
 
@@ -47,3 +48,27 @@ export async function publishPost(req, res) {
       return res.sendStatus(500);
     };
 };
+
+export async function likePost(req, res) {
+  try {
+    const { idPost } = req.body;
+    const user = res.locals.user;
+    await postsRepository.toggleLikePost(user.id,idPost)
+    return res.sendStatus(201);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  };
+}
+
+export async function checkPostLikes(req, res) {
+  const { idPost } = req.body;
+  const user = res.locals.user;
+  const checkForLikes = await postsRepository.checkLike(user.id,idPost);
+
+  if ( checkForLikes.rowCount===0 ) {
+    return res.status(200).send(false);
+  } else {
+    return res.status(200).send(true);
+  };
+}

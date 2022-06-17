@@ -11,7 +11,7 @@ CREATE TABLE "posts" (
     "idUser" INTEGER NOT NULL REFERENCES "users"("id"),
     "description" VARCHAR(500),
     "link" TEXT NOT NULL,
-    "titleLink" TEXT NOT NULL,
+    "titleLink" TEXT,
     "imageLink" TEXT NOT NULL,
     "descriptionLink" TEXT NOT NULL
 );
@@ -19,7 +19,8 @@ CREATE TABLE "posts" (
 CREATE TABLE "likesPosts" (
     "id" SERIAL PRIMARY KEY,
     "idUser" INTEGER NOT NULL REFERENCES "users"("id"),
-    "idPost" INTEGER NOT NULL REFERENCES "posts"("id")
+    "idPost" INTEGER NOT NULL REFERENCES "posts"("id"),
+    CONSTRAINT "uniqueLikes" UNIQUE ("idUser","idPost");
 );
 
 CREATE TABLE "hashtags" (
