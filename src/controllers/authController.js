@@ -58,3 +58,9 @@ export async function signIn(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function userByToken(req, res) {
+  const { user } = res.locals;
+
+  res.status(200).send(user);
+}
