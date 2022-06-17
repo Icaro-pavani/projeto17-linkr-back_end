@@ -1,7 +1,6 @@
 import db from "./../db.js";
 
 async function getAllPosts(){
-    const limit = 20;
     const query = `
         SELECT posts.*, users.username AS username, users.picture AS picture
         FROM posts 
@@ -11,9 +10,24 @@ async function getAllPosts(){
     return db.query(query);    
 };
 
+async function filterPostsByHashtag(hashtagName){
+        
+    const query = `
+        SELECT posts.*, users.username AS username, users.picture AS picture
+        FROM posts 
+        JOIN "hashtagsPosts" ON "hashtagsPosts"."idPost" = posts.id
+        JOIN hashtags ON hashtags.id = "hashtagsPosts"."idHashtag"
+        JOIN users ON users.id = posts."idUser"
+        WHERE hashtags.name = $1;
+    `;
+    return db.query(query, [hashtagName]);
+}
+
 async function insertPost(idUser, link, description, titleLink, imageLink, linkDescription) {
     return db.query(
-        `INSERT INTO posts ("idUser", description, link, "titleLink", "imageLink", "descriptionLink") VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO posts ("idUser", description, link, "titleLink", "imageLink", "descriptionLink") 
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING posts.id`,
     [idUser, description, link, titleLink, imageLink, linkDescription]);
 };
 
@@ -44,6 +58,7 @@ async function countLikes(idPost) {
 
 const postsRepository = {
     getAllPosts,
+    filterPostsByHashtag,
     insertPost,
     toggleLikePost,
     checkLike,

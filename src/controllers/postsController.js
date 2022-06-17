@@ -30,23 +30,59 @@ export async function getPosts(req, res) {
   }
 }
 
-export async function publishPost(req, res) {
+export async function getPostsByHashtag(req, res) {
+  const { hashtag } = req.params;
+  console.log(req.params);
+  try {
+    const filteredPosts = await postsRepository.filterPostsByHashtag(hashtag);
+    //console.log(filteredPosts);
+
+    const limit = 20;
+    if (filteredPosts.rowCount === 0){
+      res.sendStatus(204);
+      return;
+    }
+    else if (filteredPosts.rowCount <= limit){
+      res.status(200).send(filteredPosts.rows);
+      return;
+    }
+
+    //const { page } = req.query;
+    //const start = (page - 1) * limit;
+    //const end = page * limit;
+
+    const start = 0;
+    const end = limit;
+  
+    res.status(200).send(filteredPosts.rows.splice(start,end));
+
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
+
+export async function publishPost(req, res, next) {
     try {
       const user = res.locals.user;
       const { link, description } = req.body;
 
       const metadata = await urlMetadata(link);
-      console.log(metadata)
       const { title : titleLink , image : imageLink, description : linkDescription} = metadata;
 
-      await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
+      const result = await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
 
-      return res.sendStatus(201);
+      const postId = result.rows[0].id;
+
+      res.locals.postId = postId;
+      res.locals.postDescription = description;
 
     } catch (error) {
       console.log(error);
       return res.sendStatus(500);
     };
+
+    next();
 };
 
 export async function likePost(req, res) {
