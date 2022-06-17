@@ -31,11 +31,12 @@ export async function getPosts(req, res) {
 }
 
 export async function getPostsByHashtag(req, res) {
-  const { hashtagName } = req.params;
-
+  const { hashtag } = req.params;
+  console.log(req.params);
   try {
-    const filteredPosts = await postsRepository.filterPostsByHashtag(hashtagName);
-    
+    const filteredPosts = await postsRepository.filterPostsByHashtag(hashtag);
+    //console.log(filteredPosts);
+
     const limit = 20;
     if (filteredPosts.rowCount === 0){
       res.sendStatus(204);

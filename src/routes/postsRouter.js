@@ -8,7 +8,7 @@ import validToken from "../middlewares/validToken.js";
 const postsRouter = Router();
 
 postsRouter.get("/posts", getPosts);
-postsRouter.get("/posts/:hashtagName", getPostsByHashtag);
+postsRouter.get("/posts/:hashtag", getPostsByHashtag);
 postsRouter.post("/posts", validSchema(publishingSchema), validToken, publishPost, saveHashtags, saveRelations);
 postsRouter.post("/posts/like", validToken, likePost);
 postsRouter.post("/posts/checklike", validToken, checkPostLikes);
