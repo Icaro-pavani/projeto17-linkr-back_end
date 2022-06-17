@@ -30,23 +30,27 @@ export async function getPosts(req, res) {
   }
 }
 
-export async function publishPost(req, res) {
+export async function publishPost(req, res, next) {
     try {
       const user = res.locals.user;
       const { link, description } = req.body;
 
       const metadata = await urlMetadata(link);
-      console.log(metadata)
       const { title : titleLink , image : imageLink, description : linkDescription} = metadata;
 
-      await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
+      const result = await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
 
-      return res.sendStatus(201);
+      const postId = result.rows[0].id;
+
+      res.locals.postId = postId;
+      res.locals.postDescription = description;
 
     } catch (error) {
       console.log(error);
       return res.sendStatus(500);
     };
+
+    next();
 };
 
 export async function likePost(req, res) {
