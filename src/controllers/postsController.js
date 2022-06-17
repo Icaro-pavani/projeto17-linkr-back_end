@@ -2,32 +2,32 @@ import urlMetadata from "url-metadata";
 import postsRepository from "./../repositories/postsRepository.js";
 
 export async function getPosts(req, res) {
-  try {
-    const allPosts = await postsRepository.getAllPosts();
-    
-    const limit = 20;
-    if (allPosts.rowCount === 0){
-      res.sendStatus(204);
-      return;
+    try {
+        const allPosts = await postsRepository.getAllPosts();
+
+        const limit = 20;
+        if (allPosts.rowCount === 0) {
+            res.sendStatus(204);
+            return;
+        }
+        else if (allPosts.rowCount <= limit) {
+            res.status(200).send(allPosts.rows);
+            return;
+        }
+
+        //const { page } = req.query;
+        //const start = (page - 1) * limit;
+        //const end = page * limit;
+
+        const start = 0;
+        const end = limit;
+
+        res.status(200).send(allPosts.rows.splice(start, end));
+
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
     }
-    else if (allPosts.rowCount <= limit){
-      res.status(200).send(allPosts.rows);
-      return;
-    }
-
-    //const { page } = req.query;
-    //const start = (page - 1) * limit;
-    //const end = page * limit;
-
-    const start = 0;
-    const end = limit;
-  
-    res.status(200).send(allPosts.rows.splice(start,end));
-
-  } catch (error) {
-    console.log(error);
-    res.sendStatus(500);
-  }
 }
 
 export async function getPostsByHashtag(req, res) {
@@ -64,22 +64,33 @@ export async function getPostsByHashtag(req, res) {
 
 export async function publishPost(req, res, next) {
     try {
-      const user = res.locals.user;
-      const { link, description } = req.body;
+        const user = res.locals.user;
+        const { link, description } = res.locals.body;
 
-      const metadata = await urlMetadata(link);
-      const { title : titleLink , image : imageLink, description : linkDescription} = metadata;
-
-      const result = await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
-
-      const postId = result.rows[0].id;
-
-      res.locals.postId = postId;
-      res.locals.postDescription = description;
+        await postsRepository.insertPost(user.id, link, description);
+        return res.sendStatus(201);
 
     } catch (error) {
-      console.log(error);
-      return res.sendStatus(500);
+        console.log(error.message);
+        return res.sendStatus(500);
+    };
+};
+
+export async function deletePost(req, res) {
+    try {
+        const { id } = req.params;
+
+        const post = await postsRepository.findPost(id);
+        if (post.rowCount === 0) {
+            return res.sendStatus(404);
+        }
+
+        await postsRepository.deletePost(id);
+        return res.sendStatus(204);
+
+    } catch (error) {
+        console.log(error.message);
+        return res.sendStatus(500);
     };
 
     next();
