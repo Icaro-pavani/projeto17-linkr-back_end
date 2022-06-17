@@ -30,6 +30,37 @@ export async function getPosts(req, res) {
   }
 }
 
+export async function getPostsByHashtag(req, res) {
+  const { hashtagName } = req.params;
+
+  try {
+    const filteredPosts = await postsRepository.filterPostsByHashtag(hashtagName);
+    
+    const limit = 20;
+    if (filteredPosts.rowCount === 0){
+      res.sendStatus(204);
+      return;
+    }
+    else if (filteredPosts.rowCount <= limit){
+      res.status(200).send(filteredPosts.rows);
+      return;
+    }
+
+    //const { page } = req.query;
+    //const start = (page - 1) * limit;
+    //const end = page * limit;
+
+    const start = 0;
+    const end = limit;
+  
+    res.status(200).send(filteredPosts.rows.splice(start,end));
+
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
+
 export async function publishPost(req, res, next) {
     try {
       const user = res.locals.user;
