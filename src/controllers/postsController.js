@@ -72,3 +72,14 @@ export async function checkPostLikes(req, res) {
     return res.status(200).send(true);
   };
 }
+
+export async function countLikes(req, res) {
+  try {
+    const { idPost } = req.body;
+    const count = await postsRepository.countLikes(idPost);  
+    return res.status(200).send(count.rows[0].count);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  };
+}

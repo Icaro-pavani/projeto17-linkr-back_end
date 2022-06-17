@@ -36,11 +36,18 @@ async function checkLike(idUser, idPost) {
     [idUser, idPost]);
 };
 
+async function countLikes(idPost) {
+    return db.query(
+        `SELECT COUNT(*) FROM "likesPosts" WHERE "idPost"=$1`,
+    [idPost]);
+};
+
 const postsRepository = {
     getAllPosts,
     insertPost,
     toggleLikePost,
-    checkLike
+    checkLike,
+    countLikes
 };
 
 export default postsRepository;
