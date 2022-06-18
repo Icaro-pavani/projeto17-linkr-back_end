@@ -22,6 +22,18 @@ async function filterPostsByHashtag(hashtagName){
         WHERE hashtags.name = $1;
     `;
     return db.query(query, [hashtagName]);
+};
+
+async function filterPostsByUser(id){
+
+    const query = `
+        SELECT posts.*, users.username AS username, users.picture AS picture
+        FROM posts 
+        JOIN users ON users.id = posts."idUser"
+        WHERE users.id = $1
+        ORDER BY posts.id DESC
+    `;
+    return db.query(query, [id]);
 }
 
 async function insertPost(idUser, link, description, titleLink, imageLink, linkDescription) {
@@ -53,9 +65,8 @@ async function checkLike(idUser, idPost) {
 
 async function countLikes(idPost) {
     return db.query(
-        `INSERT INTO posts ("idUser", link, description) VALUES ($1, $2, $3)`,
-        [idUser, link, description]
-    );
+        `SELECT COUNT(*) FROM "likesPosts" WHERE "idPost"=$1`,
+    [idPost]);
 };
 
 async function deletePost(id) {
@@ -76,6 +87,7 @@ async function findPost(id) {
 const postsRepository = {
     getAllPosts,
     filterPostsByHashtag,
+    filterPostsByUser,
     insertPost,
     toggleLikePost,
     checkLike,

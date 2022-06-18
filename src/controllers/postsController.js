@@ -62,18 +62,49 @@ export async function getPostsByHashtag(req, res) {
   }
 }
 
+export async function getPostsByUser(req, res) {
+  const { id } = req.params;
+
+  try {
+    const userPosts = await postsRepository.filterPostsByUser(id);
+
+    const limit = 20;
+    if (userPosts.rowCount === 0) {
+        res.sendStatus(204);
+        return;
+    }
+    else if (userPosts.rowCount <= limit) {
+        res.status(200).send(userPosts.rows);
+        return;
+    }
+
+    //const { page } = req.query;
+    //const start = (page - 1) * limit;
+    //const end = page * limit;
+
+    const start = 0;
+    const end = limit;
+
+    res.status(200).send(userPosts.rows.splice(start, end));
+
+  } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
+  }
+};
+
 export async function publishPost(req, res, next) {
-    try {
-        const user = res.locals.user;
-        const { link, description } = res.locals.body;
+  try {
+    const user = res.locals.user;
+    const { link, description } = res.locals.body;
 
-        await postsRepository.insertPost(user.id, link, description);
-        return res.sendStatus(201);
+    await postsRepository.insertPost(user.id, link, description);
+    return res.sendStatus(201);
 
-    } catch (error) {
-        console.log(error.message);
-        return res.sendStatus(500);
-    };
+  } catch (error) {
+    console.log(error.message);
+    return res.sendStatus(500);
+  };
 };
 
 export async function deletePost(req, res) {
