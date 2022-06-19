@@ -11,8 +11,8 @@ async function getAllPosts() {
     return db.query(query);
 };
 
-async function filterPostsByHashtag(hashtagName){
-        
+async function filterPostsByHashtag(hashtagName) {
+
     const query = `
         SELECT posts.*, users.username AS username, users.picture AS picture
         FROM posts 
@@ -24,7 +24,7 @@ async function filterPostsByHashtag(hashtagName){
     return db.query(query, [hashtagName]);
 };
 
-async function filterPostsByUser(id){
+async function filterPostsByUser(id) {
 
     const query = `
         SELECT posts.*, users.username AS username, users.picture AS picture
@@ -41,32 +41,32 @@ async function insertPost(idUser, link, description, titleLink, imageLink, linkD
         `INSERT INTO posts ("idUser", description, link, "titleLink", "imageLink", "descriptionLink") 
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING posts.id`,
-    [idUser, description, link, titleLink, imageLink, linkDescription]);
+        [idUser, description, link, titleLink, imageLink, linkDescription]);
 };
 
 async function toggleLikePost(idUser, idPost) {
-    const check = await checkLike(idUser,idPost);
-    if(check.rowCount===0){
+    const check = await checkLike(idUser, idPost);
+    if (check.rowCount === 0) {
         return db.query(
             `INSERT INTO "likesPosts" ("idUser","idPost") VALUES ($1, $2)`,
-        [idUser, idPost]);
+            [idUser, idPost]);
     } else {
         return db.query(
             `DELETE FROM "likesPosts" WHERE "idUser"=$1 AND "idPost"=$2`,
-        [idUser, idPost]);
+            [idUser, idPost]);
     };
 };
 
 async function checkLike(idUser, idPost) {
     return db.query(
         `SELECT * FROM "likesPosts" WHERE "idUser"=$1 AND "idPost"=$2`,
-    [idUser, idPost]);
+        [idUser, idPost]);
 };
 
 async function countLikes(idPost) {
     return db.query(
         `SELECT COUNT(*) FROM "likesPosts" WHERE "idPost"=$1`,
-    [idPost]);
+        [idPost]);
 };
 
 async function deletePost(id) {
@@ -84,6 +84,10 @@ async function findPost(id) {
     );
 };
 
+async function updateDescription(id, description) {
+    return db.query(`UPDATE posts SET description=$1 WHERE id=$2`, [description, id]);
+}
+
 const postsRepository = {
     getAllPosts,
     filterPostsByHashtag,
@@ -94,7 +98,8 @@ const postsRepository = {
     countLikes,
     insertPost,
     deletePost,
-    findPost
+    findPost,
+    updateDescription
 };
 
 export default postsRepository;
