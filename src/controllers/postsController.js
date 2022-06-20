@@ -182,7 +182,7 @@ export async function countLikes(req, res) {
   try {
     const { id } = req.params;
     const count = await postsRepository.countLikes(id);
-    const users = await postsRepository.lastUserLikes(idPost, res.locals.user.id);
+    const users = await postsRepository.lastUserLikes(id, res.locals.user.id);
     return res.status(200).send({
       count: count.rows[0].count,
       users: users.rows.map(item => { return item.username })
