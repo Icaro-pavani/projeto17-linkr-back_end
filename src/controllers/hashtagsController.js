@@ -51,7 +51,6 @@ export async function getTrendingHashtags(req, res){
     
     const trending = result.rows;
     
-    console.log(trending);
     res.status(200).send(trending);
 
   } catch (error) {
