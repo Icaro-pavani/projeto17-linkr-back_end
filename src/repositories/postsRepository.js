@@ -97,6 +97,12 @@ async function lastUserLikes(id,idUser) {
     );
 }
 
+async function searchUsers(username) {
+    return db.query(
+        `SELECT users.id, users.username, users.picture FROM users WHERE username LIKE '%' || $1 || '%'`,[username]
+    );
+}
+
 const postsRepository = {
     getAllPosts,
     filterPostsByHashtag,
@@ -109,7 +115,8 @@ const postsRepository = {
     deletePost,
     findPost,
     updateDescription,
-    lastUserLikes
+    lastUserLikes,
+    searchUsers
 };
 
 export default postsRepository;
