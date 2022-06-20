@@ -180,8 +180,8 @@ export async function checkPostLikes(req, res) {
 
 export async function countLikes(req, res) {
   try {
-    const { idPost } = req.body;
-    const count = await postsRepository.countLikes(idPost);
+    const { id } = req.params;
+    const count = await postsRepository.countLikes(id);
     const users = await postsRepository.lastUserLikes(idPost, res.locals.user.id);
     return res.status(200).send({
       count: count.rows[0].count,
