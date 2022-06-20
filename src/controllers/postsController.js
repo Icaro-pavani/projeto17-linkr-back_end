@@ -192,3 +192,19 @@ export async function countLikes(req, res) {
     return res.sendStatus(500);
   };
 }
+
+export async function getSearchedUser(req, res) {
+  try {
+    const user = req.query.user;
+    const limit = 2
+    if (user.length >= 3) {
+      const queryUsers = await postsRepository.searchUsers(user);
+      return res.status(200).send(queryUsers.rows.splice(0, limit));
+    } else { 
+      return res.sendStatus(200)
+    };
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  };
+}
