@@ -80,12 +80,21 @@ async function deletePost(id) {
 
 async function findPost(id) {
     return db.query(
-        `SELECT FROM posts WHERE id=($1)`, [id]
+        `SELECT * FROM posts WHERE id=($1)`, [id]
     );
 };
 
 async function updateDescription(id, description) {
     return db.query(`UPDATE posts SET description=$1 WHERE id=$2`, [description, id]);
+}
+
+async function lastUserLikes(id,idUser) {
+    return db.query(
+        `SELECT DISTINCT u.username FROM "likesPosts" AS lp
+        JOIN users AS u ON lp."idUser"=u.id
+        WHERE lp."idPost"=$1 AND u.id<>$2
+        LIMIT 2`,[id,idUser]
+    );
 }
 
 const postsRepository = {
@@ -99,7 +108,8 @@ const postsRepository = {
     insertPost,
     deletePost,
     findPost,
-    updateDescription
+    updateDescription,
+    lastUserLikes
 };
 
 export default postsRepository;
