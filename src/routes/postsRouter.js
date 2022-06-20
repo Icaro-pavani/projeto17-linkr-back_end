@@ -12,7 +12,7 @@ postsRouter.get("/posts/:hashtag", getPostsByHashtag);
 postsRouter.post("/posts", validSchema(publishingSchema), validToken, publishPost, saveHashtags, saveRelations);
 postsRouter.post("/posts/like", validToken, likePost);
 postsRouter.post("/posts/checklike", validToken, checkPostLikes);
-postsRouter.post("/posts/likecount", countLikes);
+postsRouter.post("/posts/likecount", validToken, countLikes);
 postsRouter.delete("/posts/:id", validToken, deletePost);
 postsRouter.post("/posts/:id/edit", validToken, editPost);
 
