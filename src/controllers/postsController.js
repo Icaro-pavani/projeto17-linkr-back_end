@@ -32,7 +32,6 @@ export async function getPosts(req, res) {
 
 export async function getPostsByHashtag(req, res) {
   const { hashtag } = req.params;
-  console.log(req.params);
   try {
     const filteredPosts = await postsRepository.filterPostsByHashtag(hashtag);
     //console.log(filteredPosts);
@@ -96,15 +95,24 @@ export async function getPostsByUser(req, res) {
 export async function publishPost(req, res, next) {
   try {
     const user = res.locals.user;
-    const { link, description } = res.locals.body;
+    const { link, description } = req.body;
 
-    await postsRepository.insertPost(user.id, link, description);
-    return res.sendStatus(201);
+    const metadata = await urlMetadata(link);
+    const { title : titleLink , image : imageLink, description : linkDescription} = metadata;
+
+    const result = await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
+
+    const postId = result.rows[0].id;
+
+    res.locals.postId = postId;
+    res.locals.postDescription = description;
 
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.sendStatus(500);
   };
+
+  next();
 };
 
 export async function deletePost(req, res) {

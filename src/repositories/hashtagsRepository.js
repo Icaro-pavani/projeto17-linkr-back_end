@@ -23,9 +23,21 @@ async function insertRelation(hashId, postId){
     );
 }
 
+async function selectTrendingHashtags() {
+    return db.query(
+        `SELECT hashtags.name AS name, COUNT("hashtagsPosts".id) AS trend
+        FROM hashtags
+        JOIN "hashtagsPosts" ON "hashtagsPosts"."idHashtag" = hashtags.id
+        GROUP BY "hashtags".name
+        ORDER BY trend DESC
+        LIMIT 10`
+    );
+}
+
 const hashtagsRepository = {
     insertHashtag,
-    insertRelation
+    insertRelation,
+    selectTrendingHashtags
 };
 
 export default hashtagsRepository;

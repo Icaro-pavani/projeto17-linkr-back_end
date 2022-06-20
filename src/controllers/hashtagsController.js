@@ -44,3 +44,18 @@ export async function saveRelations(req, res) {
       return res.sendStatus(500);
     };
 };
+
+export async function getTrendingHashtags(req, res){
+  try {
+    const result = await hashtagsRepository.selectTrendingHashtags();
+    
+    const trending = result.rows;
+    
+    console.log(trending);
+    res.status(200).send(trending);
+
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  };
+}
