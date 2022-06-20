@@ -98,7 +98,7 @@ export async function publishPost(req, res, next) {
     const { link, description } = req.body;
 
     const metadata = await urlMetadata(link);
-    const { title : titleLink , image : imageLink, description : linkDescription} = metadata;
+    const { title: titleLink, image: imageLink, description: linkDescription } = metadata;
 
     const result = await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
 
@@ -180,9 +180,13 @@ export async function checkPostLikes(req, res) {
 
 export async function countLikes(req, res) {
   try {
-    const { idPost } = req.body;
-    const count = await postsRepository.countLikes(idPost);
-    return res.status(200).send(count.rows[0].count);
+    const { id } = req.params;
+    const count = await postsRepository.countLikes(id);
+    const users = await postsRepository.lastUserLikes(id, res.locals.user.id);
+    return res.status(200).send({
+      count: count.rows[0].count,
+      users: users.rows.map(item => { return item.username })
+    });
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
