@@ -15,6 +15,15 @@ async function signUpUser(email, password, username, picture) {
   );
 }
 
-const userRepository = { getUserByEmail, signUpUser, getUserByUsername };
+async function userById(id) {
+  return db.query(`SELECT * FROM users WHERE id = $1`, [parseInt(id)]);
+}
+
+const userRepository = {
+  getUserByEmail,
+  signUpUser,
+  getUserByUsername,
+  userById,
+};
 
 export default userRepository;

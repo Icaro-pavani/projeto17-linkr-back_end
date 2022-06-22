@@ -51,3 +51,16 @@ export async function checkFollow(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function sendAllFollows(req, res) {
+  try {
+    const { user } = res.locals;
+
+    const follows = await followsRepository.getAllFollowed(user.id);
+
+    res.status(200).send(follows.rows);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}

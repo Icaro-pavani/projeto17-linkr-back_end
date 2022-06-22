@@ -21,6 +21,17 @@ async function getFollow(idUser, idFollowed) {
   );
 }
 
-const followsRepository = { insertFollow, deleteFollow, getFollow };
+async function getAllFollowed(idUser) {
+  return db.query(`SELECT * FROM follows WHERE "idUser"= $1`, [
+    parseInt(idUser),
+  ]);
+}
+
+const followsRepository = {
+  insertFollow,
+  deleteFollow,
+  getFollow,
+  getAllFollowed,
+};
 
 export default followsRepository;

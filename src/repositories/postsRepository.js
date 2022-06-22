@@ -18,7 +18,7 @@ async function getFollowedPosts(idUser) {
         FROM follows f
         RIGHT JOIN posts p ON p."idUser" = f.following
         JOIN users u ON u.id = p."idUser"
-        WHERE f."idUser" = $1 OR p."idUser" = $1
+        WHERE f."idUser" = $1
         ORDER BY p.id DESC
         LIMIT 10
     `;
