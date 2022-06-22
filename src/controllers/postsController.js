@@ -3,14 +3,14 @@ import postsRepository from "./../repositories/postsRepository.js";
 
 export async function getPosts(req, res) {
   try {
-    const allPosts = await postsRepository.getAllPosts();
+    const { user } = res.locals;
+    const allPosts = await postsRepository.getFollowedPosts(user.id);
 
     const limit = 20;
     if (allPosts.rowCount === 0) {
       res.sendStatus(204);
       return;
-    }
-    else if (allPosts.rowCount <= limit) {
+    } else if (allPosts.rowCount <= limit) {
       res.status(200).send(allPosts.rows);
       return;
     }
@@ -23,7 +23,6 @@ export async function getPosts(req, res) {
     const end = limit;
 
     res.status(200).send(allPosts.rows.splice(start, end));
-
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -40,8 +39,7 @@ export async function getPostsByHashtag(req, res) {
     if (filteredPosts.rowCount === 0) {
       res.sendStatus(204);
       return;
-    }
-    else if (filteredPosts.rowCount <= limit) {
+    } else if (filteredPosts.rowCount <= limit) {
       res.status(200).send(filteredPosts.rows);
       return;
     }
@@ -54,7 +52,6 @@ export async function getPostsByHashtag(req, res) {
     const end = limit;
 
     res.status(200).send(filteredPosts.rows.splice(start, end));
-
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -71,8 +68,7 @@ export async function getPostsByUser(req, res) {
     if (userPosts.rowCount === 0) {
       res.sendStatus(204);
       return;
-    }
-    else if (userPosts.rowCount <= limit) {
+    } else if (userPosts.rowCount <= limit) {
       res.status(200).send(userPosts.rows);
       return;
     }
@@ -85,12 +81,11 @@ export async function getPostsByUser(req, res) {
     const end = limit;
 
     res.status(200).send(userPosts.rows.splice(start, end));
-
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
   }
-};
+}
 
 export async function publishPost(req, res, next) {
   try {
@@ -98,22 +93,32 @@ export async function publishPost(req, res, next) {
     const { link, description } = req.body;
 
     const metadata = await urlMetadata(link);
-    const { title: titleLink, image: imageLink, description: linkDescription } = metadata;
+    const {
+      title: titleLink,
+      image: imageLink,
+      description: linkDescription,
+    } = metadata;
 
-    const result = await postsRepository.insertPost(user.id, link, description, titleLink, imageLink, linkDescription);
+    const result = await postsRepository.insertPost(
+      user.id,
+      link,
+      description,
+      titleLink,
+      imageLink,
+      linkDescription
+    );
 
     const postId = result.rows[0].id;
 
     res.locals.postId = postId;
     res.locals.postDescription = description;
-
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 
   next();
-};
+}
 
 export async function deletePost(req, res) {
   try {
@@ -126,14 +131,13 @@ export async function deletePost(req, res) {
 
     await postsRepository.deletePost(id);
     return res.sendStatus(204);
-
   } catch (error) {
     console.log(error.message);
     return res.sendStatus(500);
-  };
+  }
 
   next();
-};
+}
 
 export async function editPost(req, res) {
   try {
@@ -147,23 +151,22 @@ export async function editPost(req, res) {
 
     await postsRepository.updateDescription(id, description);
     return res.sendStatus(204);
-
   } catch (error) {
     console.log(error.message);
     return res.sendStatus(500);
-  };
-};
+  }
+}
 
 export async function likePost(req, res) {
   try {
     const { idPost } = req.body;
     const user = res.locals.user;
-    await postsRepository.toggleLikePost(user.id, idPost)
+    await postsRepository.toggleLikePost(user.id, idPost);
     return res.sendStatus(201);
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 }
 
 export async function checkPostLikes(req, res) {
@@ -175,7 +178,7 @@ export async function checkPostLikes(req, res) {
     return res.status(200).send(false);
   } else {
     return res.status(200).send(true);
-  };
+  }
 }
 
 export async function countLikes(req, res) {
@@ -185,26 +188,28 @@ export async function countLikes(req, res) {
     const users = await postsRepository.lastUserLikes(id, res.locals.user.id);
     return res.status(200).send({
       count: count.rows[0].count,
-      users: users.rows.map(item => { return item.username })
+      users: users.rows.map((item) => {
+        return item.username;
+      }),
     });
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 }
 
 export async function getSearchedUser(req, res) {
   try {
     const user = req.query.user;
-    const limit = 2
+    const limit = 2;
     if (user.length >= 3) {
       const queryUsers = await postsRepository.searchUsers(user);
       return res.status(200).send(queryUsers.rows.splice(0, limit));
-    } else { 
-      return res.sendStatus(200)
-    };
+    } else {
+      return res.sendStatus(200);
+    }
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 }
