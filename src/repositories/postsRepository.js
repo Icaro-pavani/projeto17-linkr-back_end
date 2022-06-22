@@ -14,8 +14,10 @@ async function getAllPosts() {
 async function getFollowedPosts(idUser) {
   const limit = 10;
   const query = `
-        SELECT p.* FROM follows f
+        SELECT p.*, u.username AS username, u.picture AS picture 
+        FROM follows f
         RIGHT JOIN posts p ON p."idUser" = f.following
+        JOIN users u ON u.id = p."idUser"
         WHERE f."idUser" = $1 OR p."idUser" = $1
         ORDER BY p.id DESC
         LIMIT 10
