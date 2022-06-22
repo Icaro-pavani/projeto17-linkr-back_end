@@ -103,6 +103,24 @@ async function searchUsers(username) {
     );
 }
 
+async function insertComment(idUser,idPost,comment) {
+    return db.query(
+        `INSERT INTO comments ("idUser","idPost",comment,"createdAt") VALUES ($1, $2,$3,DEFAULT)`,[idUser,idPost,comment]
+    );
+}
+
+async function getComments(idUser) {
+    return db.query(
+        `SELECT users.username,users.picture,comments.* FROM comments JOIN users ON "idUser"=users.id WHERE "idPost"=$1`,[idUser]
+    );
+}
+
+async function countComments(idPost) {
+    return db.query(
+        `SELECT COUNT(*) FROM "comments" WHERE "idPost"=$1`,
+    [idPost]);
+};
+
 const postsRepository = {
     getAllPosts,
     filterPostsByHashtag,
@@ -116,7 +134,10 @@ const postsRepository = {
     findPost,
     updateDescription,
     lastUserLikes,
-    searchUsers
+    searchUsers,
+    insertComment,
+    getComments,
+    countComments
 };
 
 export default postsRepository;

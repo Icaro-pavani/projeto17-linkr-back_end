@@ -208,3 +208,38 @@ export async function getSearchedUser(req, res) {
     return res.sendStatus(500);
   };
 }
+
+export async function addComment( req, res) {
+  try {
+    const { id:idUser } = res.locals.user;
+    const { idPost, comment } = req.body;
+
+    const newComment = await postsRepository.insertComment(idUser,idPost,comment)
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  };
+}
+
+export async function getComments( req, res) {
+  try {
+    const { id:idPost } = req.params;
+    const postComments = await postsRepository.getComments(idPost)
+    return res.status(200).send(postComments.rows);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  };
+}
+
+export async function countComments( req, res) {
+  try {
+    const { id:idPost } = req.params;
+    const postComments = await postsRepository.countComments(idPost)
+    return res.status(200).send(postComments.rows[0].count);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  };
+}
