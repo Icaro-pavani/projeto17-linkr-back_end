@@ -88,20 +88,39 @@ async function updateDescription(id, description) {
     return db.query(`UPDATE posts SET description=$1 WHERE id=$2`, [description, id]);
 }
 
-async function lastUserLikes(id,idUser) {
+async function lastUserLikes(id, idUser) {
     return db.query(
         `SELECT DISTINCT u.username FROM "likesPosts" AS lp
         JOIN users AS u ON lp."idUser"=u.id
         WHERE lp."idPost"=$1 AND u.id<>$2
-        LIMIT 2`,[id,idUser]
+        LIMIT 2`, [id, idUser]
     );
 }
 
 async function searchUsers(username) {
     return db.query(
-        `SELECT users.id, users.username, users.picture FROM users WHERE username LIKE '%' || $1 || '%'`,[username]
+        `SELECT users.id, users.username, users.picture FROM users WHERE username LIKE '%' || $1 || '%'`, [username]
     );
+};
+
+async function countShares(idPost) {
+    return db.query(
+        `SELECT COUNT(*) FROM posts WHERE "idPost"=$1`,
+        [idPost]);
+};
+
+async function shareExist(idUser, idPost) {
+    return db.query(
+        `SELECT COUNT(*) FROM posts WHERE "idUser"=$1 AND "idPost"=$2`,
+        [idUser, idPost]);
 }
+
+async function sharePost(idUser, post) {
+    return db.query(
+        `INSERT INTO posts ("idUser", "idPost", description, link, "titleLink", "imageLink", "descriptionLink") 
+        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [idUser, post.id, post.description, post.link, post.titleLink, post.imageLink, post.descriptionLink]);
+};
 
 const postsRepository = {
     getAllPosts,
@@ -116,7 +135,10 @@ const postsRepository = {
     findPost,
     updateDescription,
     lastUserLikes,
-    searchUsers
+    searchUsers,
+    countShares,
+    sharePost,
+    shareExist
 };
 
 export default postsRepository;
