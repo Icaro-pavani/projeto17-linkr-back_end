@@ -5,6 +5,16 @@ export async function followUser(req, res) {
     const { id } = req.params;
     const { user } = res.locals;
 
+    if (parseInt(id) === parseInt(user.id)) {
+      return res.status(401).send("User and followed are the same person!");
+    }
+
+    const follow = await followsRepository.getFollow(user.id, id);
+
+    if (!!follow) {
+      return res.status(401).send("The user already follow this person!");
+    }
+
     await followsRepository.insertFollow(user.id, id);
 
     res.sendStatus(201);
