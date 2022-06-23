@@ -64,3 +64,15 @@ export async function userByToken(req, res) {
 
   res.status(200).send(user);
 }
+
+export async function getUserById(req, res) {
+  const { id } = req.params;
+  try {
+    const user = await userRepository.userById(id);
+
+    res.status(200).send(user.rows[0]);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
