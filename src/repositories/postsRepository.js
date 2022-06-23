@@ -127,42 +127,64 @@ async function searchUsers(username) {
   );
 }
 
-async function insertComment(idUser,idPost,comment) {
-    return db.query(
-        `INSERT INTO comments ("idUser","idPost",comment,"createdAt") VALUES ($1, $2,$3,DEFAULT)`,[idUser,idPost,comment]
-    );
+async function insertComment(idUser, idPost, comment) {
+  return db.query(
+    `INSERT INTO comments ("idUser","idPost",comment,"createdAt") VALUES ($1, $2,$3,DEFAULT)`, [idUser, idPost, comment]
+  );
 }
 
 async function getComments(idUser) {
-    return db.query(
-        `SELECT users.username,users.picture,comments.* FROM comments JOIN users ON "idUser"=users.id WHERE "idPost"=$1`,[idUser]
-    );
+  return db.query(
+    `SELECT users.username,users.picture,comments.* FROM comments JOIN users ON "idUser"=users.id WHERE "idPost"=$1`, [idUser]
+  );
+};
+
+async function countShares(idPost) {
+  return db.query(
+    `SELECT COUNT(*) FROM posts WHERE "idPost"=$1`,
+    [idPost]);
+};
+
+async function shareExist(idUser, idPost) {
+  return db.query(
+    `SELECT COUNT(*) FROM posts WHERE "idUser"=$1 AND "idPost"=$2`,
+    [idUser, idPost]);
+}
+
+async function sharePost(idUser, post) {
+  return db.query(
+    `INSERT INTO posts ("idUser", "idPost", description, link, "titleLink", "imageLink", "descriptionLink") 
+        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [idUser, post.id, post.description, post.link, post.titleLink, post.imageLink, post.descriptionLink]);
 }
 
 async function countComments(idPost) {
-    return db.query(
-        `SELECT COUNT(*) FROM "comments" WHERE "idPost"=$1`,
+  return db.query(
+    `SELECT COUNT(*) FROM "comments" WHERE "idPost"=$1`,
     [idPost]);
 };
 
 const postsRepository = {
-    getAllPosts,
-    getFollowedPosts,
-    filterPostsByHashtag,
-    filterPostsByUser,
-    insertPost,
-    toggleLikePost,
-    checkLike,
-    countLikes,
-    insertPost,
-    deletePost,
-    findPost,
-    updateDescription,
-    lastUserLikes,
-    searchUsers,
-    insertComment,
-    getComments,
-    countComments
+  getAllPosts,
+  getFollowedPosts,
+  filterPostsByHashtag,
+  filterPostsByUser,
+  insertPost,
+  toggleLikePost,
+  checkLike,
+  countLikes,
+  insertPost,
+  deletePost,
+  findPost,
+  updateDescription,
+  lastUserLikes,
+  searchUsers,
+  countShares,
+  sharePost,
+  shareExist,
+  insertComment,
+  getComments,
+  countComments
 };
 
 export default postsRepository;

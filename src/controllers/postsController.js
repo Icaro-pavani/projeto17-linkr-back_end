@@ -206,20 +206,20 @@ export async function getSearchedUser(req, res) {
       const queryUsers = await postsRepository.searchUsers(user);
       return res.status(200).send(queryUsers.rows.splice(0, limit));
     } else {
-      return res.sendStatus(200);
-    }
+      return res.sendStatus(200)
+    };
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
   };
 }
 
-export async function addComment( req, res) {
+export async function addComment(req, res) {
   try {
-    const { id:idUser } = res.locals.user;
+    const { id: idUser } = res.locals.user;
     const { idPost, comment } = req.body;
 
-    const newComment = await postsRepository.insertComment(idUser,idPost,comment)
+    const newComment = await postsRepository.insertComment(idUser, idPost, comment)
     return res.sendStatus(200);
   } catch (error) {
     console.log(error);
@@ -227,9 +227,43 @@ export async function addComment( req, res) {
   };
 }
 
-export async function getComments( req, res) {
+export async function countShares(req, res) {
   try {
-    const { id:idPost } = req.params;
+    const { id } = req.params;
+    const count = await postsRepository.countShares(id);
+    return res.status(200).send({ count: count.rows[0].count });
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  };
+}
+
+export async function sharePost(req, res) {
+  try {
+    const { idPost } = req.body;
+    const user = res.locals.user;
+
+    const post = await postsRepository.findPost(idPost);
+    if (post.rowCount === 0) {
+      return res.sendStatus(404);
+    }
+
+    const exist = await postsRepository.shareExist(user.id, post.rows[0].id);
+    if (exist.rows[0].count === 0) {
+      return res.sendStatus(409);
+    }
+
+    await postsRepository.sharePost(user.id, post.rows[0]);
+    return res.sendStatus(201);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  };
+}
+
+export async function getComments(req, res) {
+  try {
+    const { id: idPost } = req.params;
     const postComments = await postsRepository.getComments(idPost)
     return res.status(200).send(postComments.rows);
   } catch (error) {
@@ -238,9 +272,9 @@ export async function getComments( req, res) {
   };
 }
 
-export async function countComments( req, res) {
+export async function countComments(req, res) {
   try {
-    const { id:idPost } = req.params;
+    const { id: idPost } = req.params;
     const postComments = await postsRepository.countComments(idPost)
     return res.status(200).send(postComments.rows[0].count);
   } catch (error) {
