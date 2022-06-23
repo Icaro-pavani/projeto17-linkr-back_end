@@ -5,7 +5,11 @@ export default function validSchema(schema) {
     try {
       const schemaBody = {};
       for (const key in req.body) {
-        schemaBody[key] = stripHtml(req.body[key]).result.trim();
+        if(typeof schemaBody[key] === "string"){
+          schemaBody[key] = stripHtml(req.body[key]).result.trim();
+        } else {
+          schemaBody[key] = req.body[key];
+        }
       }
       const validation = await schema.validateAsync(schemaBody, {
         abortEarly: false,

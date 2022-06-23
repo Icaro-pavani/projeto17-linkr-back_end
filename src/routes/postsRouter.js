@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { getPosts, publishPost, deletePost, getPostsByHashtag, checkPostLikes, countLikes, likePost, editPost } from "../controllers/postsController.js";
+import { getPosts, publishPost, deletePost, getPostsByHashtag, checkPostLikes, countLikes, likePost, editPost, addComment, getComments, countComments } from "../controllers/postsController.js";
 import { saveHashtags, saveRelations } from "./../controllers/hashtagsController.js";
 import validSchema from "../middlewares/validSchemas.js";
 import publishingSchema from "../schemas/publishingSchema.js";
 import validToken from "../middlewares/validToken.js";
+import commentSchema from "../schemas/commentSchema.js";
 
 const postsRouter = Router();
 
@@ -15,5 +16,8 @@ postsRouter.post("/posts/checklike", validToken, checkPostLikes);
 postsRouter.get("/posts/likecount/:id", validToken, countLikes);
 postsRouter.delete("/posts/:id", validToken, deletePost);
 postsRouter.post("/posts/:id/edit", validToken, editPost);
+postsRouter.post("/posts/comment", validToken, validSchema(commentSchema), addComment); 
+postsRouter.get("/posts/comment/:id", validToken, getComments);
+postsRouter.get("/posts/commentcount/:id", validToken, countComments); 
 
 export default postsRouter;
