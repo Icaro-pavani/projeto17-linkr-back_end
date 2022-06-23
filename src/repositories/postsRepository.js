@@ -111,14 +111,6 @@ async function updateDescription(id, description) {
 }
 
 async function lastUserLikes(id, idUser) {
-<<<<<<< HEAD
-    return db.query(
-        `SELECT DISTINCT u.username FROM "likesPosts" AS lp
-        JOIN users AS u ON lp."idUser"=u.id
-        WHERE lp."idPost"=$1 AND u.id<>$2
-        LIMIT 2`, [id, idUser]
-    );
-=======
   return db.query(
     `SELECT DISTINCT u.username FROM "likesPosts" AS lp
         JOIN users AS u ON lp."idUser"=u.id
@@ -126,7 +118,6 @@ async function lastUserLikes(id, idUser) {
         LIMIT 2`,
     [id, idUser]
   );
->>>>>>> main
 }
 
 async function searchUsers(username) {
@@ -136,72 +127,64 @@ async function searchUsers(username) {
   );
 }
 
-async function insertComment(idUser,idPost,comment) {
-    return db.query(
-        `INSERT INTO comments ("idUser","idPost",comment,"createdAt") VALUES ($1, $2,$3,DEFAULT)`,[idUser,idPost,comment]
-    );
+async function insertComment(idUser, idPost, comment) {
+  return db.query(
+    `INSERT INTO comments ("idUser","idPost",comment,"createdAt") VALUES ($1, $2,$3,DEFAULT)`, [idUser, idPost, comment]
+  );
 }
 
 async function getComments(idUser) {
-    return db.query(
-<<<<<<< HEAD
-        `SELECT users.id, users.username, users.picture FROM users WHERE username LIKE '%' || $1 || '%'`, [username]
-=======
-        `SELECT users.username,users.picture,comments.* FROM comments JOIN users ON "idUser"=users.id WHERE "idPost"=$1`,[idUser]
->>>>>>> main
-    );
+  return db.query(
+    `SELECT users.username,users.picture,comments.* FROM comments JOIN users ON "idUser"=users.id WHERE "idPost"=$1`, [idUser]
+  );
 };
 
 async function countShares(idPost) {
-    return db.query(
-        `SELECT COUNT(*) FROM posts WHERE "idPost"=$1`,
-        [idPost]);
+  return db.query(
+    `SELECT COUNT(*) FROM posts WHERE "idPost"=$1`,
+    [idPost]);
 };
 
 async function shareExist(idUser, idPost) {
-    return db.query(
-        `SELECT COUNT(*) FROM posts WHERE "idUser"=$1 AND "idPost"=$2`,
-        [idUser, idPost]);
+  return db.query(
+    `SELECT COUNT(*) FROM posts WHERE "idUser"=$1 AND "idPost"=$2`,
+    [idUser, idPost]);
 }
 
-<<<<<<< HEAD
 async function sharePost(idUser, post) {
-    return db.query(
-        `INSERT INTO posts ("idUser", "idPost", description, link, "titleLink", "imageLink", "descriptionLink") 
+  return db.query(
+    `INSERT INTO posts ("idUser", "idPost", description, link, "titleLink", "imageLink", "descriptionLink") 
         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [idUser, post.id, post.description, post.link, post.titleLink, post.imageLink, post.descriptionLink]);
-=======
+    [idUser, post.id, post.description, post.link, post.titleLink, post.imageLink, post.descriptionLink]);
+}
+
 async function countComments(idPost) {
-    return db.query(
-        `SELECT COUNT(*) FROM "comments" WHERE "idPost"=$1`,
+  return db.query(
+    `SELECT COUNT(*) FROM "comments" WHERE "idPost"=$1`,
     [idPost]);
->>>>>>> main
 };
 
 const postsRepository = {
-    getAllPosts,
-    getFollowedPosts,
-    filterPostsByHashtag,
-    filterPostsByUser,
-    insertPost,
-    toggleLikePost,
-    checkLike,
-    countLikes,
-    insertPost,
-    deletePost,
-    findPost,
-    updateDescription,
-    lastUserLikes,
-    searchUsers,
-<<<<<<< HEAD
-    countShares,
-    sharePost,
-    shareExist
-=======
-    insertComment,
-    getComments,
-    countComments
->>>>>>> main
+  getAllPosts,
+  getFollowedPosts,
+  filterPostsByHashtag,
+  filterPostsByUser,
+  insertPost,
+  toggleLikePost,
+  checkLike,
+  countLikes,
+  insertPost,
+  deletePost,
+  findPost,
+  updateDescription,
+  lastUserLikes,
+  searchUsers,
+  countShares,
+  sharePost,
+  shareExist,
+  insertComment,
+  getComments,
+  countComments
 };
 
 export default postsRepository;
