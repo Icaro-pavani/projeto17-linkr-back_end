@@ -11,7 +11,7 @@ export async function followUser(req, res) {
 
     const follow = await followsRepository.getFollow(user.id, id);
 
-    if (!!follow) {
+    if (!!follow.rows[0]) {
       return res.status(401).send("The user already follow this person!");
     }
 
