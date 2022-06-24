@@ -152,7 +152,7 @@ async function getComments(idUser) {
     FROM comments 
     JOIN users as t1 ON comments."idUser"=t1.id 
     JOIN posts as t2 ON comments."idPost"=t2.id 
-    WHERE "idPost"=$1`, [idUser]
+    WHERE comments."idPost"=$1`, [idUser]
   );
 };
 
