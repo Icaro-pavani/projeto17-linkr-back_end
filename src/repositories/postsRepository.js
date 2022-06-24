@@ -135,7 +135,7 @@ async function insertComment(idUser, idPost, comment) {
 
 async function getComments(idUser) {
   return db.query(
-    `SELECT users.username,users.picture,comments.* FROM comments JOIN users ON "idUser"=users.id WHERE "idPost"=$1`, [idUser]
+    `SELECT comments.*,t1.username,t1.picture,t2."idUser" as "postAuthor" FROM comments JOIN users as t1 ON "idUser"=t1.id JOIN posts as t2 ON "idPost"=t2.id WHERE "idPost"=$1`, [idUser]
   );
 };
 

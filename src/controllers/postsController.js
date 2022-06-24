@@ -1,4 +1,5 @@
 import urlMetadata from "url-metadata";
+import followsRepository from "../repositories/followsRepository.js";
 import userRepository from "../repositories/userRepository.js";
 import postsRepository from "./../repositories/postsRepository.js";
 
@@ -269,8 +270,17 @@ export async function sharePost(req, res) {
 
 export async function getComments(req, res) {
   try {
+    const user = res.locals.user;
     const { id: idPost } = req.params;
     const postComments = await postsRepository.getComments(idPost);
+    const arrayFollowers = await followsRepository.getAllFollowedArray(user.id);
+
+    (postComments.rows).map(comment=>{
+      if (comment.idUser===comment.postAuthor){ comment.type='author' }
+      else if(arrayFollowers.rows[0].array.includes(comment.idUser)){ comment.type='following' }
+      else { comment.type='' }
+    })
+    console.log();
     return res.status(200).send(postComments.rows);
   } catch (error) {
     console.log(error);
