@@ -1,7 +1,6 @@
 import urlMetadata from "url-metadata";
-import userRepository from "../repositories/userRepository.js";
-import postsRepository from "./../repositories/postsRepository.js";
 import userRepository from "./../repositories/userRepository.js";
+import postsRepository from "./../repositories/postsRepository.js";
 
 export async function getPosts(req, res) {
   try {
