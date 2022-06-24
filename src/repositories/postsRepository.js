@@ -18,7 +18,6 @@ async function getFollowedPosts(idUser) {
         JOIN users u ON u.id = p."idUser"
         WHERE f."idUser" = $1
         ORDER BY p.id DESC
-        LIMIT 20
     `;
   return db.query(query, [parseInt(idUser)]);
 }

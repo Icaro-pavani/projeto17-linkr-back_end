@@ -8,7 +8,7 @@ export async function getPosts(req, res) {
     const { user } = res.locals;
     const allPosts = await postsRepository.getFollowedPosts(user.id);
 
-    const limit = 20;
+    const limit = 10;
     if (allPosts.rowCount === 0) {
       res.sendStatus(204);
       return;
@@ -17,12 +17,12 @@ export async function getPosts(req, res) {
       return;
     }
 
-    //const { page } = req.query;
-    //const start = (page - 1) * limit;
-    //const end = page * limit;
+    const { page } = req.query;
+    const start = (page - 1) * limit;
+    const end = page * limit;
 
-    const start = 0;
-    const end = limit;
+    //const start = 0;
+    //const end = limit;
 
     res.status(200).send(allPosts.rows.splice(start, end));
   } catch (error) {
