@@ -19,8 +19,8 @@ postsRouter.delete("/posts/:id", validToken, deletePost);
 postsRouter.post("/posts/:id/edit", validToken, editPost);
 postsRouter.get("/posts/sharecount/:id", validToken, countShares);
 postsRouter.post("/posts/share", validToken, sharePost);
-postsRouter.post("/posts/comment", validToken, validSchema(commentSchema), addComment); 
+postsRouter.post("/posts/comment", validToken, validSchema(commentSchema), addComment);
 postsRouter.get("/posts/comment/:id", validToken, getComments);
-postsRouter.get("/posts/commentcount/:id", validToken, countComments); 
+postsRouter.get("/posts/commentcount/:id", validToken, countComments);
 
 export default postsRouter;

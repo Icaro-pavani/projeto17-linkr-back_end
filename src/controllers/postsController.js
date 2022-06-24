@@ -269,8 +269,21 @@ export async function addComment(req, res) {
 export async function countShares(req, res) {
   try {
     const { id } = req.params;
+    const post = await postsRepository.findPost(id);
+    if (post.rowCount === 0) {
+      return res.sendStatus(404);
+    }
+
+    const user = await userRepository.userById(post.rows[0].idUser);
+
     const count = await postsRepository.countShares(id);
-    return res.status(200).send({ count: count.rows[0].count });
+    return res.status(200).send({
+      count: count.rows[0].count,
+      user: {
+        id: user.rows[0].id,
+        username: user.rows[0].username
+      }
+    });
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
