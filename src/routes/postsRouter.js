@@ -10,7 +10,7 @@ const postsRouter = Router();
 
 postsRouter.get("/posts", validToken, getPosts);
 postsRouter.get("/posts/:hashtag", validToken, getPostsByHashtag);
-postsRouter.get("posts/new/:id", validToken, getNewPosts);
+postsRouter.get("/posts/new/:id", validToken, getNewPosts);
 postsRouter.post("/posts", validSchema(publishingSchema), validToken, publishPost, saveHashtags, saveRelations);
 postsRouter.post("/posts/like", validToken, likePost);
 postsRouter.post("/posts/checklike", validToken, checkPostLikes);

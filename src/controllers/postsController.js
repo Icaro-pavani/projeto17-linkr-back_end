@@ -32,19 +32,18 @@ export async function getPosts(req, res) {
 }
 
 export async function getNewPosts(req, res) {
-
-  const { id } = req.params;
+  let { id } = req.params;
 
   try {
     const { user } = res.locals;
-    const allPosts = await postsRepository.getFollowedPosts(user.id, id);
+    const response = await postsRepository.getFollowedNewPosts(user.id, id);
 
     const limit = 20;
-    if (allPosts.rowCount === 0) {
+    if (response.rowCount === 0) {
       res.sendStatus(204);
       return;
-    } else if (allPosts.rowCount <= limit) {
-      res.status(200).send(allPosts.rows);
+    } else if (response.rowCount <= limit) {
+      res.status(200).send(response.rows);
       return;
     }
 
@@ -55,8 +54,7 @@ export async function getNewPosts(req, res) {
     const start = 0;
     const end = limit;
 
-    res.status(200).send(allPosts.rows.splice(start, end));
-
+    res.status(200).send(response.rows.splice(start, end));
 
   } catch (error) {
     console.log(error);

@@ -23,7 +23,7 @@ async function getFollowedPosts(idUser) {
   return db.query(query, [parseInt(idUser)]);
 }
 
-async function getNewPosts(idUser, idLastPost) {
+async function getFollowedNewPosts(idUser, idLastPost) {
   const query = `
         SELECT p.*, u.username AS username, u.picture AS picture 
         FROM follows f
@@ -196,7 +196,7 @@ const postsRepository = {
   insertComment,
   getComments,
   countComments,
-  getNewPosts
+  getFollowedNewPosts
 };
 
 export default postsRepository;
