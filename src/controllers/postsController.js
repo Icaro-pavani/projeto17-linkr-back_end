@@ -1,5 +1,6 @@
 import urlMetadata from "url-metadata";
-import userRepository from "./../repositories/userRepository.js";
+import followsRepository from "../repositories/followsRepository.js";
+import userRepository from "../repositories/userRepository.js";
 import postsRepository from "./../repositories/postsRepository.js";
 
 export async function getPosts(req, res) {
@@ -7,12 +8,42 @@ export async function getPosts(req, res) {
     const { user } = res.locals;
     const allPosts = await postsRepository.getFollowedPosts(user.id);
 
-    const limit = 20;
+    const limit = 10;
     if (allPosts.rowCount === 0) {
       res.sendStatus(204);
       return;
     } else if (allPosts.rowCount <= limit) {
       res.status(200).send(allPosts.rows);
+      return;
+    }
+
+    const { page } = req.query;
+    const start = (page - 1) * limit;
+    const end = page * limit;
+
+    //const start = 0;
+    //const end = limit;
+
+    res.status(200).send(allPosts.rows.splice(start, end));
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
+
+export async function getNewPosts(req, res) {
+  let { id } = req.params;
+
+  try {
+    const { user } = res.locals;
+    const response = await postsRepository.getFollowedNewPosts(user.id, id);
+
+    const limit = 20;
+    if (response.rowCount === 0) {
+      res.sendStatus(204);
+      return;
+    } else if (response.rowCount <= limit) {
+      res.status(200).send(response.rows);
       return;
     }
 
@@ -23,12 +54,14 @@ export async function getPosts(req, res) {
     const start = 0;
     const end = limit;
 
-    res.status(200).send(allPosts.rows.splice(start, end));
+    res.status(200).send(response.rows.splice(start, end));
+
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
   }
 }
+
 
 export async function getPostsByHashtag(req, res) {
   const { hashtag } = req.params;
@@ -282,8 +315,17 @@ export async function sharePost(req, res) {
 
 export async function getComments(req, res) {
   try {
+    const user = res.locals.user;
     const { id: idPost } = req.params;
     const postComments = await postsRepository.getComments(idPost);
+    const arrayFollowers = await followsRepository.getAllFollowedArray(user.id);
+
+    (postComments.rows).map(comment=>{
+      if (comment.idUser===comment.postAuthor){ comment.type="post's author" }
+      else if(arrayFollowers.rows[0].array.includes(comment.idUser)){ comment.type="following" }
+      else { comment.type="" }
+    })
+    console.log();
     return res.status(200).send(postComments.rows);
   } catch (error) {
     console.log(error);

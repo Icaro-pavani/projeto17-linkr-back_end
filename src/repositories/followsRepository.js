@@ -27,11 +27,18 @@ async function getAllFollowed(idUser) {
   ]);
 }
 
+async function getAllFollowedArray(idUser) {
+  return db.query(`SELECT ARRAY (SELECT following FROM follows WHERE "idUser"=$1)`, [
+    parseInt(idUser)
+  ]);
+}
+
 const followsRepository = {
   insertFollow,
   deleteFollow,
   getFollow,
   getAllFollowed,
+  getAllFollowedArray
 };
 
 export default followsRepository;

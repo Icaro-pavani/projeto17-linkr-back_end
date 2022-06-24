@@ -1,7 +1,6 @@
 import db from "./../db.js";
 
 async function getAllPosts() {
-  const limit = 20;
   const query = `
         SELECT posts.*, users.username AS username, users.picture AS picture
         FROM posts 
@@ -12,7 +11,6 @@ async function getAllPosts() {
 }
 
 async function getFollowedPosts(idUser) {
-  const limit = 10;
   const query = `
         SELECT p.*, u.username AS username, u.picture AS picture 
         FROM follows f
@@ -20,9 +18,21 @@ async function getFollowedPosts(idUser) {
         JOIN users u ON u.id = p."idUser"
         WHERE f."idUser" = $1
         ORDER BY p.id DESC
-        LIMIT 10
     `;
   return db.query(query, [parseInt(idUser)]);
+}
+
+async function getFollowedNewPosts(idUser, idLastPost) {
+  const query = `
+        SELECT p.*, u.username AS username, u.picture AS picture 
+        FROM follows f
+        RIGHT JOIN posts p ON p."idUser" = f.following
+        JOIN users u ON u.id = p."idUser"
+        WHERE f."idUser" = $1 AND p.id > $2
+        ORDER BY p.id DESC
+        LIMIT 20
+    `;
+  return db.query(query, [parseInt(idUser), parseInt(idLastPost)]);
 }
 
 async function filterPostsByHashtag(hashtagName) {
@@ -135,7 +145,7 @@ async function insertComment(idUser, idPost, comment) {
 
 async function getComments(idUser) {
   return db.query(
-    `SELECT users.username,users.picture,comments.* FROM comments JOIN users ON "idUser"=users.id WHERE "idPost"=$1`, [idUser]
+    `SELECT comments.*,t1.username,t1.picture,t2."idUser" as "postAuthor" FROM comments JOIN users as t1 ON "idUser"=t1.id JOIN posts as t2 ON "idPost"=t2.id WHERE "idPost"=$1`, [idUser]
   );
 };
 
@@ -184,7 +194,8 @@ const postsRepository = {
   shareExist,
   insertComment,
   getComments,
-  countComments
+  countComments,
+  getFollowedNewPosts
 };
 
 export default postsRepository;
