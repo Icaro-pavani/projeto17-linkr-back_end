@@ -1,7 +1,6 @@
 import db from "./../db.js";
 
 async function getAllPosts() {
-  const limit = 20;
   const query = `
         SELECT posts.*, users.username AS username, users.picture AS picture
         FROM posts 
@@ -21,6 +20,19 @@ async function getFollowedPosts(idUser) {
         ORDER BY p.id DESC
     `;
   return db.query(query, [parseInt(idUser)]);
+}
+
+async function getFollowedNewPosts(idUser, idLastPost) {
+  const query = `
+        SELECT p.*, u.username AS username, u.picture AS picture 
+        FROM follows f
+        RIGHT JOIN posts p ON p."idUser" = f.following
+        JOIN users u ON u.id = p."idUser"
+        WHERE f."idUser" = $1 AND p.id > $2
+        ORDER BY p.id DESC
+        LIMIT 20
+    `;
+  return db.query(query, [parseInt(idUser), parseInt(idLastPost)]);
 }
 
 async function filterPostsByHashtag(hashtagName) {
@@ -182,7 +194,8 @@ const postsRepository = {
   shareExist,
   insertComment,
   getComments,
-  countComments
+  countComments,
+  getFollowedNewPosts
 };
 
 export default postsRepository;
