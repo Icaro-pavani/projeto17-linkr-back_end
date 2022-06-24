@@ -276,9 +276,9 @@ export async function getComments(req, res) {
     const arrayFollowers = await followsRepository.getAllFollowedArray(user.id);
 
     (postComments.rows).map(comment=>{
-      if (comment.idUser===comment.postAuthor){ comment.type='author' }
-      else if(arrayFollowers.rows[0].array.includes(comment.idUser)){ comment.type='following' }
-      else { comment.type='' }
+      if (comment.idUser===comment.postAuthor){ comment.type="post's author" }
+      else if(arrayFollowers.rows[0].array.includes(comment.idUser)){ comment.type="following" }
+      else { comment.type="" }
     })
     console.log();
     return res.status(200).send(postComments.rows);
