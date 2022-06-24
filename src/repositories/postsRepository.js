@@ -105,6 +105,8 @@ async function countLikes(idPost) {
 async function deletePost(id) {
   await db.query(`DELETE FROM "hashtagsPosts" WHERE "idPost" = $1`, [id]);
   await db.query(`DELETE FROM "likesPosts" WHERE "idPost" = $1`, [id]);
+  await db.query(`DELETE FROM posts WHERE "idPost" = $1`, [id]);
+  await db.query(`DELETE FROM comments WHERE "idPost" = $1`, [id]);
 
   return db.query(`DELETE FROM posts WHERE id=($1)`, [id]);
 }
