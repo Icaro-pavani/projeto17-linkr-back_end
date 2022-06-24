@@ -1,4 +1,5 @@
 import urlMetadata from "url-metadata";
+import userRepository from "../repositories/userRepository.js";
 import postsRepository from "./../repositories/postsRepository.js";
 import userRepository from "./../repositories/userRepository.js";
 
@@ -202,17 +203,18 @@ export async function countLikes(req, res) {
 export async function getSearchedUser(req, res) {
   try {
     const user = req.query.user;
+    const { user: loggedUser } = res.locals;
     const limit = 2;
     if (user.length >= 3) {
-      const queryUsers = await postsRepository.searchUsers(user);
+      const queryUsers = await userRepository.searchUsers(loggedUser.id, user);
       return res.status(200).send(queryUsers.rows.splice(0, limit));
     } else {
-      return res.sendStatus(200)
-    };
+      return res.sendStatus(200);
+    }
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 }
 
 export async function addComment(req, res) {
@@ -220,12 +222,16 @@ export async function addComment(req, res) {
     const { id: idUser } = res.locals.user;
     const { idPost, comment } = req.body;
 
-    const newComment = await postsRepository.insertComment(idUser, idPost, comment)
+    const newComment = await postsRepository.insertComment(
+      idUser,
+      idPost,
+      comment
+    );
     return res.sendStatus(200);
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 }
 
 export async function countShares(req, res) {
@@ -249,7 +255,7 @@ export async function countShares(req, res) {
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 }
 
 export async function sharePost(req, res) {
@@ -272,27 +278,27 @@ export async function sharePost(req, res) {
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 }
 
 export async function getComments(req, res) {
   try {
     const { id: idPost } = req.params;
-    const postComments = await postsRepository.getComments(idPost)
+    const postComments = await postsRepository.getComments(idPost);
     return res.status(200).send(postComments.rows);
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 }
 
 export async function countComments(req, res) {
   try {
     const { id: idPost } = req.params;
-    const postComments = await postsRepository.countComments(idPost)
+    const postComments = await postsRepository.countComments(idPost);
     return res.status(200).send(postComments.rows[0].count);
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
-  };
+  }
 }

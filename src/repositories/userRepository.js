@@ -19,11 +19,24 @@ async function userById(id) {
   return db.query(`SELECT * FROM users WHERE id = $1`, [parseInt(id)]);
 }
 
+async function searchUsers(idUser, username) {
+  return db.query(
+    `SELECT users.id, users.username, users.picture, f."idUser" as follow
+    FROM users 
+    LEFT JOIN (SELECT * FROM follows WHERE "idUser" = $1) f
+    ON f.following = users.id
+    WHERE username LIKE '%' || $2 || '%'
+    ORDER BY follow`,
+    [parseInt(idUser), username]
+  );
+}
+
 const userRepository = {
   getUserByEmail,
   signUpUser,
   getUserByUsername,
   userById,
+  searchUsers,
 };
 
 export default userRepository;
