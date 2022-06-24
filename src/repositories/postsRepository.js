@@ -12,7 +12,6 @@ async function getAllPosts() {
 }
 
 async function getFollowedPosts(idUser) {
-  const limit = 10;
   const query = `
         SELECT p.*, u.username AS username, u.picture AS picture 
         FROM follows f
@@ -20,7 +19,6 @@ async function getFollowedPosts(idUser) {
         JOIN users u ON u.id = p."idUser"
         WHERE f."idUser" = $1
         ORDER BY p.id DESC
-        LIMIT 10
     `;
   return db.query(query, [parseInt(idUser)]);
 }
