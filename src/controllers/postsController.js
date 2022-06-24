@@ -12,10 +12,11 @@ export async function getPosts(req, res) {
     if (allPosts.rowCount === 0) {
       res.sendStatus(204);
       return;
-    } else if (allPosts.rowCount <= limit) {
-      res.status(200).send(allPosts.rows);
-      return;
-    }
+    } 
+    // else if (allPosts.rowCount <= limit) {
+    //   res.status(200).send(allPosts.rows);
+    //   return;
+    // }
 
     const { page } = req.query;
     const start = (page - 1) * limit;
