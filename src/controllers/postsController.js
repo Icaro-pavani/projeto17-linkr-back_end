@@ -12,7 +12,7 @@ export async function getPosts(req, res) {
     if (allPosts.rowCount === 0) {
       res.sendStatus(204);
       return;
-    } 
+    }
     // else if (allPosts.rowCount <= limit) {
     //   res.status(200).send(allPosts.rows);
     //   return;
@@ -56,13 +56,11 @@ export async function getNewPosts(req, res) {
     const end = limit;
 
     res.status(200).send(response.rows.splice(start, end));
-
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
   }
 }
-
 
 export async function getPostsByHashtag(req, res) {
   const { hashtag } = req.params;
@@ -282,8 +280,9 @@ export async function countShares(req, res) {
       count: count.rows[0].count,
       user: {
         id: user.rows[0].id,
-        username: user.rows[0].username
-      }
+        username: user.rows[0].username,
+        picture: user.rows[0].picture,
+      },
     });
   } catch (error) {
     console.log(error);
@@ -321,11 +320,15 @@ export async function getComments(req, res) {
     const postComments = await postsRepository.getComments(idPost);
     const arrayFollowers = await followsRepository.getAllFollowedArray(user.id);
 
-    (postComments.rows).map(comment=>{
-      if (comment.idUser===comment.postAuthor){ comment.type="post's author" }
-      else if(arrayFollowers.rows[0].array.includes(comment.idUser)){ comment.type="following" }
-      else { comment.type="" }
-    })
+    postComments.rows.map((comment) => {
+      if (comment.idUser === comment.postAuthor) {
+        comment.type = "post's author";
+      } else if (arrayFollowers.rows[0].array.includes(comment.idUser)) {
+        comment.type = "following";
+      } else {
+        comment.type = "";
+      }
+    });
     console.log();
     return res.status(200).send(postComments.rows);
   } catch (error) {
